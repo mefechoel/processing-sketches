@@ -142,3 +142,19 @@ void draw() {
 
   noisePos += NOISE_OFFSET;
 }
+
+void drawCircle(float x, float y, float size, float blur, float alpha) {
+  int radius = (int) size / 2;
+  int blurEdgeRadius = radius - (int) (radius * blur);
+  int remainingRadius = radius - blurEdgeRadius;
+  println("radius         " + radius);
+  println("blurEdgeRadius " + blurEdgeRadius);
+  for (int r = blurEdgeRadius; r > 0; --r) {
+    float blurAmount = (r + 0.0) / (blurEdgeRadius + 0.0);
+    float currentAlpha = alpha - (blurAmount * alpha);
+    fill(200, currentAlpha);
+    circle(x, y, (r + remainingRadius) * 2);
+  }
+  fill(200, alpha);
+  circle(x, y, remainingRadius * 2);
+}
