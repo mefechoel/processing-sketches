@@ -1,7 +1,7 @@
 class PixelCreator implements PixelCreateable {
 	int xoff = 0;
 	int yoff = 0;
-	Scaler scaler;
+	PixelGetter pixelGetter;
 
 	color rotateHue(color col, float amount) {
 		return color(
@@ -16,13 +16,13 @@ class PixelCreator implements PixelCreateable {
 		this.yoff = yoff;
 	}
 
-	void setScaler(Scaler scaler) {
-		this.scaler = scaler;
+	void setPixelGetter(PixelGetter pixelGetter) {
+		this.pixelGetter = pixelGetter;
 	}
 
 	color createPixel(color[] oldPixels, int x, int y) {
-		int i = index(x, y, width);
-		color pixel = scaler.getPixel(
+		int i = x + y * width;
+		color pixel = pixelGetter.getPixel(
 			oldPixels,
 			x + xoff,
 			y + yoff,

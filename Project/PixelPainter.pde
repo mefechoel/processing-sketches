@@ -7,6 +7,10 @@ class PixelPainter {
 	PixelCreateable pixelCreator;
 	String mode = NORMAL;
 
+	int index(int x, int y, int width) {
+		return x + y * width;
+	}
+
 	void setMode(String mode) {
 		this.mode = mode;
 	}

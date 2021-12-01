@@ -7,33 +7,34 @@ int xoff = 0;
 int yoff = 0;
 
 Scaler scaler;
+Rotator rotator;
 PixelPainter painter;
 PixelCreator creator;
 
-int index(int x, int y, int width) {
-	return x + y * width;
-}
-
 void setup() {
-	size(1200, 800);
-	surface.setResizable(true);
+	// fullScreen();
+	size(1400, 960);
+	// surface.setResizable(true);
+	// frameRate(2);
+	// noLoop();
 
 	colorMode(HSB);
 
 	img = loadImage("sunset.jpg");
 	image(img, 0, 0, width, height);
 
-	background(6, 40, 80);
-	noStroke();
-	for (int i = 0; i < 85; ++i) {
-		fill(random(30, 255), random(30, 255), random(30, 255));
-		circle(random(width), random(height), random(65, 125));
-	}
+	// background(6, 40, 80);
+	// noStroke();
+	// for (int i = 0; i < 185; ++i) {
+	// 	fill(random(30, 255), random(30, 255), random(30, 255));
+	// 	circle(random(width), random(height), random(65, 125));
+	// }
 
 	scaler = new Scaler();
+	rotator = new Rotator();
 	painter = new PixelPainter();
 	creator = new PixelCreator();
-	creator.setScaler(scaler);
+	creator.setPixelGetter(rotator);
 	painter.setPixelCreator(creator);
 }
 
@@ -45,6 +46,7 @@ void draw() {
 	yoff = (int) (((mouseY / (height + 0.0)) * 2.0 - 1) * maxOffset);
 
 	scaler.setScale(width, height, scaleX, scaleY);
+	rotator.setRotation(width, height, TWO_PI / 6.0);
 	painter.setDimensions(width, height);
 	creator.setOffset(xoff, yoff);
 

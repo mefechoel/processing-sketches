@@ -1,4 +1,4 @@
-class Scaler {
+class Scaler implements PixelGetter {
 	int width;
 	int height;
 	float widthf;
