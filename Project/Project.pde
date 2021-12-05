@@ -1,13 +1,18 @@
 PImage img;
 float scaleX = 1.16;
-float scaleY = 1.16;
-float offsetFraction = 0.15;
-float hueRotation = 2;
-int xoff = 0;
-int yoff = 0;
+float scaleY = 1.1;
+float rotationAngle = -TWO_PI * 0.005;
+float offsetFraction = 0.5;
+float hueRotation = 2.0;
+char prevKey = 'x';
+float noiseOffset = 0.0;
+float noiseStep = 0.01;
+boolean isLooping = true;
 
-Scaler scaler;
-Rotator rotator;
+TScaling scaling;
+TRotation rotation;
+TBaloon baloon;
+PixelProjector projector;
 PixelPainter painter;
 PixelCreator creator;
 
@@ -20,7 +25,7 @@ void setup() {
 
 	colorMode(HSB);
 
-	img = loadImage("sunset.jpg");
+	img = loadImage("mountain.jpg");
 	image(img, 0, 0, width, height);
 
 	// background(6, 40, 80);
@@ -30,33 +35,66 @@ void setup() {
 	// 	circle(random(width), random(height), random(65, 125));
 	// }
 
-	scaler = new Scaler();
-	rotator = new Rotator();
+	projector = new PixelProjector();
+	scaling = new TScaling(scaleX, scaleY);
+	rotation = new TRotation(rotationAngle);
+	baloon = new TBaloon(2);
+	projector.addTransform(rotation);
+	projector.addTransform(scaling);
 	painter = new PixelPainter();
 	creator = new PixelCreator();
-	creator.setPixelGetter(rotator);
+	creator.setPixelGetter(projector);
 	painter.setPixelCreator(creator);
 }
 
 void draw() {
 	loadPixels();
 
-	int maxOffset = (int) (min(width, height) * offsetFraction);
-	xoff = (int) (((mouseX / (width + 0.0)) * 2.0 - 1) * maxOffset);
-	yoff = (int) (((mouseY / (height + 0.0)) * 2.0 - 1) * maxOffset);
+	float originXFrac = (mouseX / (width + 0.0) - 0.5) * offsetFraction + 0.5;
+	float originYFrac = (mouseY / (height + 0.0) - 0.5) * offsetFraction + 0.5;
 
-	scaler.setScale(width, height, scaleX, scaleY);
-	rotator.setRotation(width, height, TWO_PI / 6.0);
+	if (keyPressed && key == ' ' && prevKey != ' ') {
+		projector.clear();
+		projector.addTransform(scaling);
+		projector.addTransform(rotation);
+		projector.addTransform(baloon);
+		prevKey = key;
+	}
+	if (!keyPressed && prevKey == ' ') {
+		projector.clear();
+		projector.addTransform(scaling);
+		projector.addTransform(rotation);
+		prevKey = 'x';
+	}
+
+	rotation.setAngle(rotationAngle - noise(noiseOffset + noiseStep * frameCount));
+	// creator.setHueRotation(hueRotation);
+	projector.setDimensions(width, height);
+	// projector.setOrigin(originXFrac, originYFrac);
 	painter.setDimensions(width, height);
-	creator.setOffset(xoff, yoff);
 
 	painter.paint(pixels);
 
 	if (mousePressed) {
-		painter.setMode(PixelPainter.KALEIDOSCOPE);
+		painter.setMode(PixelPainter.HORIZONTAL_FLIPPED_MIRROR);
 	} else {
 		painter.setMode(PixelPainter.NORMAL);
 	}
 
 	updatePixels();
+}
+
+void keyPressed() {
+  if (key == 'p') {
+		if (isLooping) {
+			noLoop();
+		} else {
+			loop();
+		}
+		isLooping = !isLooping;
+	}
+
+  if (key == 's') {
+		save("feedback-" + frameCount + ".png");
+	}
 }
