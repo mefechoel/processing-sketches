@@ -70,15 +70,15 @@ void draw() {
 	rotation.setAngle(rotationAngle - noise(noiseOffset + noiseStep * frameCount));
 	// creator.setHueRotation(hueRotation);
 	projector.setDimensions(width, height);
-	// projector.setOrigin(originXFrac, originYFrac);
+	projector.setOrigin(originXFrac, originYFrac);
 	painter.setDimensions(width, height);
 
 	painter.paint(pixels);
 
 	if (mousePressed) {
-		painter.setMode(PixelPainter.HORIZONTAL_FLIPPED_MIRROR);
+		painter.setMode(PixelPainter.KALEIDOSCOPE);
 	} else {
-		painter.setMode(PixelPainter.NORMAL);
+		painter.setMode(PixelPainter.HORIZONTAL_FLIPPED_MIRROR);
 	}
 
 	updatePixels();
